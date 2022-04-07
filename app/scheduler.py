@@ -30,6 +30,7 @@ if __name__ == "__main__":
   logging.debug("authorized slack client")
   resp = requests.post("http://daily_wisdom.kesselmanrao.com/slack/tao")
   schedule.every().day.at("10:30").do(sendDailyWisdom, slack_client=slack_client)
+#  schedule.every(5).seconds.do(sendDailyWisdom, slack_client=slack_client)
 
   while True:
     schedule.run_pending()
