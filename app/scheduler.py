@@ -8,22 +8,21 @@ from slack_sdk.errors import SlackApiError
 import requests
 import json
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
-def sendMessage(slack_client, msg):
-  print("Sending message")
+def sendMessage(slack_client, msg, channel):
   try:
     slack_client.chat_postMessage(
-      channel='#tao',
+      channel=channel,
       blocks=msg
-    )#.get()
+    )
   except SlackApiError as e:
     logging.error('Request to Slack API Failed: {}.'.format(e.response.status_code))
     logging.error(e.response)
 
 def sendDailyWisdom(slack_client):
   resp = requests.post("http://daily_wisdom.kesselmanrao.com/slack/tao")
-  sendMessage(slack_client, resp.json()["blocks"])
+  sendMessage(slack_client, resp.json()["blocks"], channel="#tao")
 
 if __name__ == "__main__":
   SLACK_BOT_TOKEN = os.environ['SLACK_BOT_TOKEN']
