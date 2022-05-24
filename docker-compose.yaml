@@ -1,6 +1,7 @@
 version: "3.3"
 services:
   scheduler:
+    restart: always
     env_file:
       - .env
     build: .

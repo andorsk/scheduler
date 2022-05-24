@@ -21,15 +21,49 @@ def sendMessage(slack_client, msg, channel):
     logging.error(e.response)
 
 def sendDailyWisdom(slack_client):
-  resp = requests.post("http://daily_wisdom.kesselmanrao.com/slack/tao")
-  sendMessage(slack_client, resp.json()["blocks"], channel="#tao")
+    
+    calls = [
+     {
+       "url": "https://daily_wisdom.kesselmanrao.com/slack/tao",
+       "channel": "#tao"
+     },
+     {
+       "url": "https://daily_wisdom.kesselmanrao.com/slack/sun_tsu",
+       "channel": "#tao"
+     },
+     {
+       "url": "https://kannada-words.kesselmanrao.com/word",
+       "channel": "#kannada"
+     },
+     {
+       "url": "https://daily_wisdom.kesselmanrao.com/slack/quote",
+       "channel": "#tao"
+     },
+     {
+       "url": "https://daily_wisdom.kesselmanrao.com/slack/fact",
+       "channel": "#tao"
+     },
+     {
+       "url": "https://daily_wisdom.kesselmanrao.com/slack/joke",
+       "channel": "#tao"
+     }
+    ]
 
+    for c in calls:
+        print("Attempting {} to {}", c["url"], c["channel"])
+        try:
+           resp = requests.post(c["url"])
+           sendMessage(slack_client, resp.json()["blocks"], channel=c["channel"])
+        except Exception as e:
+           print("Failed to send message to channel: {}. URL: {} Channel".format(e, c["url"], c["channel"]))
+  
 if __name__ == "__main__":
   SLACK_BOT_TOKEN = os.environ['SLACK_BOT_TOKEN']
   slack_client = WebClient(SLACK_BOT_TOKEN)
   logging.debug("authorized slack client")
-  resp = requests.post("http://daily_wisdom.kesselmanrao.com/slack/tao")
-  schedule.every().day.at("10:30").do(sendDailyWisdom, slack_client=slack_client)
+  schedule.every().day.at("04:30").do(sendDailyWisdom, slack_client=slack_client)
+  sendDailyWisdom(slack_client=slack_client)
+
 #  schedule.every(5).seconds.do(sendDailyWisdom, slack_client=slack_client)
 
   while True:
